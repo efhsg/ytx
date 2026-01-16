@@ -1,5 +1,12 @@
 # ytx - YouTube Transcript Extractor
 
+## Prime Directive
+
+Before making any code changes:
+1. Read `.claude/rules/coding-standards.md` for Python conventions
+2. Follow `.claude/rules/commits.md` for commit messages
+3. Run `/finalize-changes` before committing
+
 ## Intent
 
 ytx extracts YouTube video transcripts via API and outputs clean markdown. No browser automation needed - just pass a URL, get formatted text in seconds.

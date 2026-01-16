@@ -2,8 +2,5 @@ __pycache__/
 *.py[cod]
 .venv/
 venv/
-*.md
-!CLAUDE.md
-!README.md
 .idea/
 .vscode/
