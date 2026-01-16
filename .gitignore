@@ -4,5 +4,6 @@ __pycache__/
 venv/
 *.md
 !CLAUDE.md
+!README.md
 .idea/
 .vscode/
