@@ -1,7 +1,7 @@
 # ytx: PromptManager Integration
 
 ## Overview
-Add `--push` flag to send transcripts directly to PromptManager's ScratchPad API.
+Add `--push` flag to send transcripts directly to PromptManager's Note API.
 
 ---
 
@@ -11,7 +11,7 @@ Add `--push` flag to send transcripts directly to PromptManager's ScratchPad API
 
 ```python
 parser.add_argument('--push', action='store_true',
-                    help='Push to PromptManager scratch_pad')
+                    help='Push to PromptManager note')
 parser.add_argument('--project', default='YouTube transcripts',
                     help='PromptManager project name (default: YouTube transcripts)')
 ```
@@ -51,23 +51,24 @@ def normalize_base_url(url: str) -> str:
     return url.rstrip('/')
 
 def load_config() -> dict:
-    """Load config from ~/.ytx.json or environment."""
+    """Load config from ~/.ytx.json, local .ytx.json, or environment variables.
+
+    Priority: ~/.ytx.json < .ytx.json (project root) < environment variables.
+    """
     config = {}
-    config_path = os.path.expanduser('~/.ytx.json')
-    if os.path.exists(config_path):
-        try:
-            with open(config_path) as f:
-                config = json.load(f)
-        except json.JSONDecodeError as exc:
-            print(f"ERROR: Invalid JSON in {config_path}: {exc}", file=sys.stderr)
-            sys.exit(1)
-    # Environment overrides
-    config['promptmanager_url'] = os.environ.get(
-        'YTX_PROMPTMANAGER_URL', config.get('promptmanager_url', ''))
+    for config_path in [os.path.expanduser('~/.ytx.json'), '.ytx.json']:
+        if os.path.exists(config_path):
+            try:
+                with open(config_path) as f:
+                    config.update(json.load(f))
+            except json.JSONDecodeError as exc:
+                print(f"ERROR: Invalid JSON in {config_path}: {exc}", file=sys.stderr)
+                sys.exit(1)
+    # Environment overrides file config
+    config['promptmanager_url'] = normalize_base_url(
+        os.environ.get('YTX_PROMPTMANAGER_URL', config.get('promptmanager_url', '')))
     config['promptmanager_token'] = os.environ.get(
         'YTX_PROMPTMANAGER_TOKEN', config.get('promptmanager_token', ''))
-    config['promptmanager_url'] = normalize_base_url(
-        config.get('promptmanager_url', ''))
     return config
 ```
 
@@ -78,9 +79,10 @@ def load_config() -> dict:
 **File:** `ytx.py`
 
 ```python
-def push_to_promptmanager(name: str, content: str, project: str, config: dict) -> dict:
-    """Push content to PromptManager scratch_pad API."""
-    url = f"{config['promptmanager_url']}/api/scratch-pad/create"
+def push_to_promptmanager(name: str, content: str, project: str, config: dict,
+                          content_format: str = 'md') -> dict:
+    """Push content to PromptManager note API."""
+    url = f"{config['promptmanager_url']}/api/note/create"
     headers = {
         'Authorization': f"Bearer {config['promptmanager_token']}",
         'Content-Type': 'application/json',
@@ -96,9 +98,9 @@ def push_to_promptmanager(name: str, content: str, project: str, config: dict) -
         with urllib.request.urlopen(req, timeout=30) as response:
             return json.loads(response.read().decode('utf-8'))
     except urllib.error.HTTPError as exc:
-        return {'error': f'HTTP {exc.code}: {exc.reason}'}
+        return {'error': f'PromptManager push failed: HTTP {exc.code} {exc.reason} ({url})'}
     except urllib.error.URLError as exc:
-        return {'error': f'Network error: {exc.reason}'}
+        return {'error': f'PromptManager unreachable: {exc.reason} ({url})'}
 ```
 
 ---
@@ -112,11 +114,11 @@ if args.push:
     config = load_config()
     if not config.get('promptmanager_url'):
         print("ERROR: No PromptManager URL configured", file=sys.stderr)
-        print("Set YTX_PROMPTMANAGER_URL or add to ~/.ytx.json", file=sys.stderr)
+        print("Set YTX_PROMPTMANAGER_URL or add to ~/.ytx.json or .ytx.json", file=sys.stderr)
         sys.exit(1)
     if not config.get('promptmanager_token'):
         print("ERROR: No PromptManager token configured", file=sys.stderr)
-        print("Set YTX_PROMPTMANAGER_TOKEN or add to ~/.ytx.json", file=sys.stderr)
+        print("Set YTX_PROMPTMANAGER_TOKEN or add to ~/.ytx.json or .ytx.json", file=sys.stderr)
         sys.exit(1)
 
 # ... fetch transcript and generate output ...
@@ -177,7 +179,7 @@ python ytx.py "VIDEO_URL" --json --push
 
 1. Create `~/.ytx.json` with token from PromptManager
 2. Run: `python ytx.py "VIDEO_URL" -O --push`
-3. Check PromptManager web UI for new scratch_pad
+3. Check PromptManager web UI for new note
 4. Test negative cases:
    - Missing URL → clear error, exits before fetching transcript
    - Missing token → clear error, exits before fetching transcript

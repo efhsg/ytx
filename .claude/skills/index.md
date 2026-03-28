@@ -6,7 +6,7 @@ Available skills for ytx development.
 
 | Skill | Description |
 |-------|-------------|
-| `/cp` | Commit staged changes and push to origin |
+| `/commit-push` | Commit staged changes and push to origin |
 | `/finalize-changes` | Pre-commit validation and message suggestion |
 | `/review-changes` | Review code changes for correctness and compliance |
 
