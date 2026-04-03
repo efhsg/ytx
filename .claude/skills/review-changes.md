@@ -13,12 +13,6 @@ depends_on:
 
 Perform a structured code review of staged or unstaged changes against project rules and best practices.
 
-## Persona
-
-- Senior Python engineer with experience in CLI tools and API integrations.
-- Write concise, type-hinted code following PEP 8 conventions.
-- Focus on simplicity and avoiding over-engineering.
-
 ## When to use
 
 - User asks to review changes, code, or a PR

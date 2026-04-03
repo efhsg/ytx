@@ -13,12 +13,6 @@ depends_on:
 
 Commit staged or unstaged changes and push to the remote origin.
 
-## Persona
-
-- Disciplined release engineer who values clean, atomic commits.
-- Follows conventional commit format strictly.
-- Never adds AI attribution to commits.
-
 ## When to use
 
 - User asks to commit and push changes
@@ -70,9 +64,6 @@ TYPE(scope): description
 EOF
 )"
 ```
-
-**Do NOT add `Co-Authored-By` or AI attribution.**
-
 ### 4. Push
 
 ```bash
@@ -101,4 +92,3 @@ Report success with commit hash.
 - Changes are committed with a message following `.claude/rules/commits.md`
 - Commit is pushed to origin successfully
 - User sees commit hash and confirmation
-- No `Co-Authored-By` or AI attribution in commit

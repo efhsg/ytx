@@ -522,18 +522,18 @@ def main():
 
     args = parser.parse_args()
 
-    # Validate config early (before fetching transcript) to fail fast
+    # Validate push config early — warn and skip if misconfigured
     config = None
     if args.push:
         config = load_config()
         if not config.get('promptmanager_url'):
-            print("ERROR: No PromptManager URL configured", file=sys.stderr)
+            print("WARNING: No PromptManager URL configured — skipping push", file=sys.stderr)
             print("Set YTX_PROMPTMANAGER_URL or add to ~/.ytx.json or .ytx.json", file=sys.stderr)
-            sys.exit(1)
-        if not config.get('promptmanager_token'):
-            print("ERROR: No PromptManager token configured", file=sys.stderr)
+            args.push = False
+        elif not config.get('promptmanager_token'):
+            print("WARNING: No PromptManager token configured — skipping push", file=sys.stderr)
             print("Set YTX_PROMPTMANAGER_TOKEN or add to ~/.ytx.json or .ytx.json", file=sys.stderr)
-            sys.exit(1)
+            args.push = False
 
     try:
         video_id = extract_video_id(args.video)

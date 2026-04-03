@@ -5,46 +5,42 @@
 Before making any code changes:
 1. Read `.claude/rules/coding-standards.md` for Python conventions
 2. Follow `.claude/rules/commits.md` for commit messages
-3. Run `/finalize-changes` before committing
+3. Follow `.claude/rules/workflow.md` for development process
+4. Check `.claude/rules/skill-routing.md` to load relevant skills
+5. Run `/finalize-changes` before committing
+
+## Shared Rules
+
+All rules in `.claude/rules/` are non-negotiable:
+
+| Rule | Scope |
+|------|-------|
+| `coding-standards.md` | Python conventions, type hints, imports |
+| `commits.md` | Commit message format and types |
+| `workflow.md` | Skill-driven development process |
+| `testing.md` | pytest conventions and mocking strategy |
+| `skill-routing.md` | Auto-load skills by file pattern or topic |
 
 ## Intent
 
 ytx extracts YouTube video transcripts via API and outputs clean markdown. No browser automation needed - just pass a URL, get formatted text in seconds.
 
-## Usage
+## Quick Reference
+
+See `README.md` for full usage, flags, output formats, and configuration.
+
 ```bash
 python ytx.py "<url>" -o output.md
-python ytx.py VIDEO_ID -l nl        # Dutch
-python ytx.py VIDEO_ID --json       # JSON output
-python ytx.py VIDEO_ID -O           # AI-optimized output
+python ytx.py VIDEO_ID -O --push    # AI-optimized + push to PromptManager
 ```
-
-## Flags
-
-| Flag | Description |
-|------|-------------|
-| `-o FILE` | Save to file (default: stdout) |
-| `-l LANG` | Preferred language code (default: en) |
-| `--json` | Output as JSON instead of markdown |
-| `-O, --optimize` | AI-optimized: cleans filler, extracts sections/tools/steps |
-
-## Output
-
-**Standard:** Markdown with title (H1), channel, URL, date, description, transcript text (no timestamps).
-
-**Optimized (-O):** Adds tools mentioned, key steps, table of contents, and logical sections.
 
 ## Dependencies
 
 - `youtube-transcript-api` - transcript fetching (required)
 - `yt-dlp` - metadata + description (optional, falls back to oEmbed)
 
-## Workarounds
+## Testing
 
-### Schrijven naar `.claude/` geblokkeerd
-
-De Write tool en Bash heredocs naar `.claude/` paden worden geblokkeerd zonder permissieprompt. Workaround:
-
-1. Schrijf een tijdelijk shellscript in de project root (bijv. `_apply_changes.sh`)
-2. Voer het script uit via Bash
-3. Verwijder het script
+```bash
+python -m pytest tests/
+```

@@ -14,12 +14,6 @@ depends_on:
 
 Pre-commit validation workflow. Run before committing to catch issues early and generate a standards-compliant commit message.
 
-## Persona
-
-- Senior Python engineer with experience in CLI tools and API integrations.
-- Write concise, type-hinted code following PEP 8 conventions.
-- Focus on simplicity and avoiding over-engineering.
-
 ## When to use
 
 - Before committing changes
@@ -75,7 +69,6 @@ Per `.claude/rules/commits.md`:
 - Determine optional `scope` (cli, output, api)
 - Propose message: `TYPE(scope): description`
 - Imperative mood, lowercase, no period, under 72 characters
-- No `Co-Authored-By` trailer
 
 ## Algorithm
 
